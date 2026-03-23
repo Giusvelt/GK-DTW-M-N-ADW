@@ -23,7 +23,8 @@ Prima di iniziare, ogni agente deve:
 ## 🚦 Stato Attuale
 - [x] Blindatura Desktop Crew (Mappa Only).
 - [x] News & ADV Mobile per Crew.
-- [/] **CRITICO**: Ripristino logica Poligonale nel Database (In corso).
+- [x] **CRITICO**: Ripristino logica Poligonale (Migrazione 016 - DONE).
+- [x] **PWA**: Trasformazione completa (Icons + Vite-PWA - DONE).
 - [ ] Rifacimento UX Mobile Crew (Sessione Full-Screen).
 
 ---
