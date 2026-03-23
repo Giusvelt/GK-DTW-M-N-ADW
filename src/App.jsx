@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DataProvider, useData } from './context/DataContext';
 import { supabase } from './lib/supabase';
 import { useUserProfile } from './hooks/useUserProfile';
@@ -45,8 +46,8 @@ function ActivityDashboard({ onSignOut }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Permessi basati sul ruolo
-  const perms = can(profile?.role);
+  // Permessi basati sul ruolo (con supporto agli overrides)
+  const perms = profile?.permissions || can(profile?.role);
 
   // Session Lock — dormiente (ENABLED=false in useSessionLock.js)
   useSessionLock(profile?.id, async (reason) => {
@@ -59,16 +60,30 @@ function ActivityDashboard({ onSignOut }) {
 
 
   const renderTabContent = () => {
-    switch(activeTab) {
-      case 'activity': return <VesselActivityTab />;
-      case 'logbook-entry': return <LogbookWriterTab />;
-      case 'schedule': return <StandbySchedule />;
-      case 'rewind': return <RewindMapTab />;
-      case 'production': return <ProductionTargetTab />;
-      case 'dbmanager': return <DBManager />;
-      case 'usermgmt': return <UserManagementTab />;
-      default: return <VesselActivityTab />;
-    }
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+           key={activeTab}
+           initial={{ opacity: 0, x: 20 }}
+           animate={{ opacity: 1, x: 0 }}
+           exit={{ opacity: 0, x: -20 }}
+           transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          {(() => {
+            switch(activeTab) {
+              case 'activity': return <VesselActivityTab />;
+              case 'logbook-entry': return <LogbookWriterTab />;
+              case 'schedule': return <StandbySchedule />;
+              case 'rewind': return <RewindMapTab />;
+              case 'production': return <ProductionTargetTab />;
+              case 'dbmanager': return <DBManager />;
+              case 'usermgmt': return <UserManagementTab />;
+              default: return <VesselActivityTab />;
+            }
+          })()}
+        </motion.div>
+      </AnimatePresence>
+    );
   };
 
   // Crew sempre mobile, operators solo se schermo piccolo
@@ -96,7 +111,7 @@ function ActivityDashboard({ onSignOut }) {
         {mobileTab === 'news' && <MobileCrewNews />}
         {mobileTab === 'fleet' && (
           <div className="h-[60vh] rounded-xl overflow-hidden shadow-lg border border-surface-low/50">
-             <VesselMap geofences={geofences} vesselPositions={vesselPositions} height="100%" />
+             <VesselMap height="100%" />
           </div>
         )}
         {mobileTab === 'chat' && <MobileOperatorChat profile={profile} />}
@@ -147,8 +162,6 @@ function ActivityDashboard({ onSignOut }) {
           </div>
           <div className="rounded-[1.5rem] overflow-hidden border border-surface-low/20">
             <VesselMap
-              geofences={geofences}
-              vesselPositions={vesselPositions}
               height="350px"
             />
           </div>
@@ -158,7 +171,7 @@ function ActivityDashboard({ onSignOut }) {
         <nav className="bg-white/50 backdrop-blur-md rounded-[2.5rem] p-2 mb-8 sm:mb-12 border border-white flex flex-wrap items-center gap-1 shadow-sm overflow-x-auto scrollbar-hide">
           {[
             { id: 'activity', label: 'Vessel Activity', icon: Activity },
-            { id: 'logbook-entry', label: 'Submit Activity', icon: Edit3, permission: perms.submitLogbook },
+            { id: 'logbook-entry', label: 'Submit Activity', icon: Edit3, permission: perms.submitLogbook || perms.approveLogbook },
             { id: 'schedule', label: 'Schedule', icon: Calendar, permission: perms.seeSchedule },
             { id: 'rewind', label: 'Rewind', icon: Rewind, permission: perms.seeRewindMap },
             { id: 'production', label: 'Production Targets', icon: Target, permission: perms.seeProductionTargets },
@@ -186,7 +199,7 @@ function ActivityDashboard({ onSignOut }) {
         </nav>
 
         {/* Content Area */}
-        <div className="animate-in fade-in slide-in-from-bottom-6 duration-1000">
+        <div className="tab-content-container">
            {renderTabContent()}
         </div>
       </main>
