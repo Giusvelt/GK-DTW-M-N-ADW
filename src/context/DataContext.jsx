@@ -62,7 +62,6 @@ export function DataProvider({ children }) {
             let visibleVessels = vessels;
 
             if (profile?.role === 'crew' && crewVesselId) {
-                // crew → solo la propria nave (e flotta per nome, come prima come fallback)
                 const crewVessel = vessels.find(v => v.id === crewVesselId);
                 const crewCompanyId = crewVessel?.company_id || profile.companyId;
 
@@ -70,42 +69,46 @@ export function DataProvider({ children }) {
                     ? vessels.filter(v => v.company_id === crewCompanyId)
                     : [crewVessel].filter(Boolean);
             } else if (profile?.role === 'crew_admin' && profile.companyId) {
-                // crew_admin → tutte le navi della propria compagnia
                 visibleVessels = vessels.filter(v => v.company_id === profile.companyId);
             }
-            // operation e operation_admin → visibleVessels = tutti (invariato)
-
+            
             const visibleIds = visibleVessels.map(v => v.id);
+            if (visibleIds.length === 0) return;
 
-            let query = supabase
+            const { data, error } = await supabase
                 .from('vessel_tracking')
                 .select('vessel_id, mmsi, lat, lon, speed, heading, status, timestamp')
+                .in('vessel_id', visibleIds)
                 .order('timestamp', { ascending: false })
-                .limit(200);
+                .limit(500); 
 
-            if (visibleIds.length > 0 && visibleIds.length < vessels.length) {
-                query = query.in('vessel_id', visibleIds);
-            }
+            if (error) return;
 
-            const { data, error } = await query;
-            if (error || !data) return;
-
+            const now = new Date();
             const positions = visibleVessels.map(v => {
-                const track = data.find(t =>
-                    t.vessel_id === v.id ||
-                    String(t.mmsi) === String(v.mmsi)
+                const track = data.find(t => 
+                    (t.vessel_id && String(t.vessel_id).toLowerCase() === String(v.id).toLowerCase()) || 
+                    (t.mmsi && String(t.mmsi) === String(v.mmsi))
                 );
+                
+                if (!track) return null;
+
+                const lastUpdateTs = new Date(track.timestamp);
+                const hoursOld = (now - lastUpdateTs) / (1000 * 60 * 60);
+
                 return {
                     vessel: v.name,
                     vesselId: v.id,
-                    lat: track?.lat || 0,
-                    lon: track?.lon || 0,
-                    speed: track?.speed || 0,
-                    heading: track?.heading || 0,
-                    status: track?.status || 'unknown',
-                    lastUpdate: track?.timestamp || null
+                    lat: Number(track.lat),
+                    lon: Number(track.lon),
+                    speed: Number(track.speed || 0),
+                    heading: Number(track.heading || 0),
+                    status: track.status || 'unknown',
+                    lastUpdate: track.timestamp,
+                    isStale: hoursOld > 12 
                 };
-            });
+            }).filter(Boolean);
+            
             setVesselPositions(positions);
         };
 

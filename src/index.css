@@ -36,7 +36,18 @@
   --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  /* Safe Areas */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
+
+.pt-safe { padding-top: var(--safe-top); }
+.pb-safe { padding-bottom: var(--safe-bottom); }
+.mt-safe { margin-top: var(--safe-top); }
+.mb-safe { margin-bottom: var(--safe-bottom); }
 
 body {
   font-family: 'Inter', sans-serif;

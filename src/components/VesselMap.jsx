@@ -3,8 +3,12 @@ import { MapContainer, TileLayer, Polygon, Marker, Popup, useMap } from 'react-l
 import L from 'leaflet';
 
 // Custom vessel icon builder
-const createVesselIcon = (heading = 0, isMoving = false) => {
-    const color = isMoving ? '#3b82f6' : '#64748b';
+const createVesselIcon = (heading = 0, isMoving = false, isStale = false) => {
+    // Se il dato è vecchio (>12h), usiamo Ambra per avvertire l'utente.
+    // Altrimenti Blu se in movimento, Grigio se fermo.
+    let color = isMoving ? '#3b82f6' : '#64748b';
+    if (isStale) color = '#f59e0b'; // Ambra/Arancio per dati obsoleti
+
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="${color}" stroke="white" stroke-width="1.5" transform="rotate(${heading})">
         <path d="M12 2 L8 20 L12 17 L16 20 Z"/>
     </svg>`;
@@ -45,22 +49,31 @@ export default function VesselMap({ geofences = [], vesselPositions = [], height
         }).filter(Boolean);
     }, [geofences]);
 
-    // Valid vessel positions only
-    const validPositions = useMemo(() =>
-        (vesselPositions || []).filter(p => p.lat && p.lon && p.lat !== 0),
-        [vesselPositions]);
+    // Valid vessel positions only - Simple check
+    const validPositions = (vesselPositions || []).filter(p => p && p.lat && p.lon);
 
-    // Set center fixed to Genova/Ligurian sea area as requested
-    const center = [43.8, 9.0];
+    // Force map resize fix
+    const InvalidateMap = () => {
+        const map = useMap();
+        React.useEffect(() => {
+            const timer = setTimeout(() => map.invalidateSize(), 800);
+            return () => clearTimeout(timer);
+        }, [map]);
+        return null;
+    };
+
+    // Set center fixed to Genova area
+    const center = [44.0, 9.0];
 
     return (
         <MapContainer
             center={center}
-            zoom={7}
+            zoom={8}
             style={{ height, width: '100%', borderRadius: '16px' }}
             zoomControl={false}
             className="map-tiles-contrast"
         >
+            <InvalidateMap />
             <TileLayer
                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; CartoDB'
@@ -92,13 +105,15 @@ export default function VesselMap({ geofences = [], vesselPositions = [], height
                 <Marker
                     key={pos.vessel}
                     position={[pos.lat, pos.lon]}
-                    icon={createVesselIcon(pos.heading, pos.speed > 0.8)}
+                    icon={createVesselIcon(pos.heading, pos.speed > 0.8, pos.isStale)}
                 >
                     <Popup>
                         <strong>{pos.vessel}</strong><br />
                         <span style={{ fontSize: '11px' }}>
                             Speed: {pos.speed?.toFixed(1)} kn<br />
-                            Status: {pos.status}
+                            Status: {pos.status}<br />
+                            Last Update: {new Date(pos.lastUpdate).toLocaleString('en-GB')}<br />
+                            {pos.isStale && <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>● Offline ({'>'}12h)</span>}
                         </span>
                     </Popup>
                 </Marker>

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useUserProfile } from '../hooks/useUserProfile';
-import LogbookModal from './LogbookModal';
+import MobileLogbookWriter from './MobileLogbookWriter';
 import ActivityChatModal from './ActivityChatModal';
 
 const formatTime = (ts) => {
@@ -298,7 +298,7 @@ export default function MobileCrewActivity() {
 
       {/* Modals */}
       {logbookModal && (
-        <LogbookModal
+        <MobileLogbookWriter
           activity={logbookModal}
           userId={profile?.id}
           userRole={profile?.role || 'crew'}

@@ -56,6 +56,7 @@ export default function VesselActivityTab() {
     const [search, setSearch] = useState('');
     const [logbookActivity, setLogbookActivity] = useState(null);
     const [chatActivity, setChatActivity] = useState(null);
+    const [hoverData, setHoverData] = useState({ id: null, messages: [], loading: false });
 
     const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -126,6 +127,24 @@ export default function VesselActivityTab() {
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Activities");
         XLSX.writeFile(wb, `GeoKanban_Export_${selectedYear}_${selectedMonth + 1}.xlsx`);
+    };
+
+    const handleMessageHover = async (activityId) => {
+        if (hoverData.id === activityId) return;
+        setHoverData({ id: activityId, messages: [], loading: true });
+        try {
+            const { data, error } = await supabase
+                .from('activity_messages')
+                .select('message_text, sender_role')
+                .eq('vessel_activity_id', activityId)
+                .order('created_at', { ascending: false })
+                .limit(2);
+            if (error) throw error;
+            setHoverData({ id: activityId, messages: (data || []).reverse(), loading: false });
+        } catch (err) {
+            console.error('Error fetching hover messages:', err);
+            setHoverData({ id: null, messages: [], loading: false });
+        }
     };
 
     return (
@@ -316,10 +335,40 @@ export default function VesselActivityTab() {
                                                 <CheckCircle size={14} />
                                             </button>
                                         </td>
-                                        <td className="px-4 py-3 bg-white rounded-r-xl text-right">
-                                            <button onClick={() => setChatActivity(a)} className="w-8 h-8 rounded-full bg-surface-low/30 inline-flex items-center justify-center text-on-surface/20 hover:bg-secondary hover:text-white transition-all">
+                                        <td className="px-4 py-3 bg-white rounded-r-xl text-right relative">
+                                            <button 
+                                                onClick={() => setChatActivity(a)} 
+                                                onMouseEnter={() => handleMessageHover(a.id)}
+                                                onMouseLeave={() => setHoverData({ id: null, messages: [], loading: false })}
+                                                className={`w-8 h-8 rounded-full inline-flex items-center justify-center transition-all shadow-sm ${
+                                                    (a.msgCount > 0 || a.unreadMsgCount > 0)
+                                                    ? 'bg-blue-900 text-white hover:bg-blue-800' 
+                                                    : 'bg-surface-low/30 text-on-surface/20 hover:bg-secondary hover:text-white'
+                                                }`}
+                                            >
                                                 <MessageSquare size={13} />
+                                                {a.unreadMsgCount > 0 && (
+                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white pointer-events-none" />
+                                                )}
                                             </button>
+
+                                            {/* MESSAGE TOOLTIP (VIGNETTA) */}
+                                            {hoverData.id === a.id && !hoverData.loading && hoverData.messages.length > 0 && (
+                                                <div className="absolute bottom-full right-4 mb-2 z-50 w-64 bg-[#002B5B] text-white p-3 rounded-2xl shadow-xl animate-in zoom-in-95 fade-in duration-200 pointer-events-none">
+                                                    <div className="space-y-2">
+                                                        {hoverData.messages.map((m, idx) => (
+                                                            <div key={idx} className="flex items-start gap-2 text-[10px] font-bold leading-tight">
+                                                                <span className="flex-shrink-0 opacity-50 mt-0.5">
+                                                                    {m.sender_role === 'crew' ? '📤' : '📥'}
+                                                                </span>
+                                                                <p className="text-left line-clamp-2 italic">{m.message_text}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    {/* Triangle pointer */}
+                                                    <div className="absolute top-full right-4 -mt-1 w-3 h-3 bg-[#002B5B] rotate-45" />
+                                                </div>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

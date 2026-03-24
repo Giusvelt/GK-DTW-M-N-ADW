@@ -1,5 +1,11 @@
 # 🛰️ MISSION CONTROL: GeoKanban V3
 
+> [!IMPORTANT]
+> **PROGETTO UFFICIALE (NORTH STAR)**
+> - **Repository**: `Giusvelt/GK-DTW-M-N-ADW`
+> - **Branch**: `main`
+> - **Vercel**: `geokanbanv3.vercel.app`
+
 Questo è il cuore della memoria del progetto. Ogni agente (AI o umano) DEVE leggere questo file prima di iniziare qualsiasi attività.
 
 ## 🎯 Obiettivo Finale (The North Star)
@@ -25,6 +31,8 @@ Prima di iniziare, ogni agente deve:
 - [x] News & ADV Mobile per Crew.
 - [x] **CRITICO**: Ripristino logica Poligonale (Migrazione 016 - DONE).
 - [x] **PWA**: Trasformazione completa (Icons + Vite-PWA - DONE).
+- [x] **MESSAGGI**: Highlights Blu Scuro (DONE).
+- [x] **MAPPA**: Ripristino visibilità flotta (Stale logic - DONE).
 - [ ] Rifacimento UX Mobile Crew (Sessione Full-Screen).
 
 ---

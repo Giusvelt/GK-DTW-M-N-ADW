@@ -90,7 +90,8 @@ export function useActivityLog(vesselId = null) {
                 exportFlag: row.export_flag,
                 logbookStatus: row.logbook_entries?.[0]?.status || 'none',
                 deliveredQty: row.logbook_entries?.[0]?.structured_fields?.actual_cargo_tonnes || null,
-                msgCount: row.activity_messages?.filter(m => !m.is_read && m.sender_role !== profile?.role).length || 0,
+                msgCount: row.activity_messages?.length || 0,
+                unreadMsgCount: row.activity_messages?.filter(m => !m.is_read && m.sender_role !== profile?.role).length || 0,
                 weather: weatherByVessel[row.vessels?.mmsi] || null
             }));
 

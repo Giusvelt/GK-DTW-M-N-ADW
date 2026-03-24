@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
     Wind, MessageSquare, ChevronRight, 
-    ShoppingBag, Star, Zap, Info, Bell
+    ShoppingBag, Star, Zap, Info, Bell, Droplet, Coffee, Shield
 } from 'lucide-react';
 
 export default function MobileCrewNews() {
@@ -10,7 +10,9 @@ export default function MobileCrewNews() {
             name: 'Acqua Minerale 6x1.5L', 
             category: 'Supplies', 
             price: '€4.50', 
-            img: 'crew_water_packs_adv_1774017617956.png',
+            icon: Droplet,
+            color: 'text-blue-500',
+            bg: 'bg-blue-50',
             desc: 'Consegna diretta in banchina.',
             url: 'https://www.esselungaacasa.it/ecommerce/nav/d/consegna-a-domicilio/beverages/water.html'
         },
@@ -18,7 +20,9 @@ export default function MobileCrewNews() {
             name: 'Capsule Espresso (50x)', 
             category: 'Vessel Choice', 
             price: '€18.90', 
-            img: 'crew_coffee_capsules_adv_1774017633779.png',
+            icon: Coffee,
+            color: 'text-amber-700',
+            bg: 'bg-amber-50',
             desc: 'Miscela intensa per turni notturni.',
             url: 'https://www.nespresso.com/it/it/ordine/capsule'
         },
@@ -26,7 +30,9 @@ export default function MobileCrewNews() {
             name: 'Stivali Deck S3', 
             category: 'Safety Gear', 
             price: '€85.00', 
-            img: 'crew_safety_boots_adv_1774017650118.png',
+            icon: Shield,
+            color: 'text-slate-700',
+            bg: 'bg-slate-100',
             desc: 'Impermeabili e antiscivolo.',
             url: 'https://www.heltess.it/calzature-antinfortunistiche'
         },
@@ -83,9 +89,9 @@ export default function MobileCrewNews() {
 
                 <div className="space-y-4">
                     {products.map((p, i) => (
-                        <div key={i} className="flex gap-4 p-3 bg-white rounded-2xl border border-surface-low/30 shadow-sm active:scale-[0.98] transition-all">
-                            <div className="w-24 h-24 rounded-xl bg-surface-low/20 overflow-hidden flex-shrink-0">
-                                <img src={`/brain/fcb47bdf-25a3-4a38-a827-b24822f8cdee/${p.img}`} alt={p.name} className="w-full h-full object-cover" />
+                        <div key={i} className="flex gap-4 p-3 bg-white rounded-[2rem] border border-surface-low/30 shadow-sm active:scale-[0.98] transition-all">
+                            <div className={`w-20 h-20 rounded-2xl ${p.bg} flex items-center justify-center flex-shrink-0`}>
+                                <p.icon size={32} className={p.color} strokeWidth={1.5} />
                             </div>
                             <div className="flex-1 flex flex-col justify-between py-1">
                                 <div>

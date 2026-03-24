@@ -163,6 +163,8 @@ function ActivityDashboard({ onSignOut }) {
           <div className="rounded-[1.5rem] overflow-hidden border border-surface-low/20">
             <VesselMap
               height="350px"
+              vesselPositions={vesselPositions}
+              geofences={geofences}
             />
           </div>
         </div>
@@ -171,7 +173,7 @@ function ActivityDashboard({ onSignOut }) {
         <nav className="bg-white/50 backdrop-blur-md rounded-[2.5rem] p-2 mb-8 sm:mb-12 border border-white flex flex-wrap items-center gap-1 shadow-sm overflow-x-auto scrollbar-hide">
           {[
             { id: 'activity', label: 'Vessel Activity', icon: Activity },
-            { id: 'logbook-entry', label: 'Submit Activity', icon: Edit3, permission: perms.submitLogbook || perms.approveLogbook },
+            { id: 'logbook-entry', label: 'Submitted Entry', icon: Edit3, permission: perms.submitLogbook || perms.approveLogbook },
             { id: 'schedule', label: 'Schedule', icon: Calendar, permission: perms.seeSchedule },
             { id: 'rewind', label: 'Rewind', icon: Rewind, permission: perms.seeRewindMap },
             { id: 'production', label: 'Production Targets', icon: Target, permission: perms.seeProductionTargets },
