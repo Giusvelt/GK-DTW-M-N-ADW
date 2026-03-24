@@ -342,8 +342,19 @@ export default function VesselActivityTab() {
                                         </td>
                                         <td className="px-4 py-3 bg-white text-[9px] font-black text-on-surface/20 uppercase">{calcDuration(a.startTime, a.endTime) || '—'}</td>
                                         <td className="px-4 py-3 bg-white text-center">
-                                            <button onClick={() => setLogbookActivity(a)} className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${a.logbookStatus === 'submitted' ? 'bg-green-500 text-white shadow-md' : 'bg-surface-low/30 text-on-surface/20 hover:bg-primary hover:text-white'}`}>
-                                                <CheckCircle size={14} />
+                                            <button 
+                                                onClick={() => setLogbookActivity(a)} 
+                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto
+                                                    ${a.logbookStatus === 'submitted' || a.logbookStatus === 'approved'
+                                                        ? 'bg-green-50 text-green-600 border-green-200' 
+                                                        : 'bg-white text-primary border-surface-low/50 hover:bg-primary hover:text-white shadow-sm'
+                                                    }`}
+                                            >
+                                                {a.logbookStatus === 'submitted' || a.logbookStatus === 'approved' ? (
+                                                    <><CheckCircle size={12} /> Inviato</>
+                                                ) : (
+                                                    <><Edit3 size={12} /> Edit</>
+                                                )}
                                             </button>
                                         </td>
                                         <td className="px-4 py-3 bg-white rounded-r-xl text-right relative">
