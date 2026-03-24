@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useUserProfile } from '../hooks/useUserProfile';
-import MobileLogbookWriter from './MobileLogbookWriter';
+import LogbookEntryModal from './LogbookEntryModal';
 import ActivityChatModal from './ActivityChatModal';
 
 const formatTime = (ts) => {
@@ -291,19 +291,32 @@ export default function MobileCrewActivity() {
                 Annulla
               </button>
             </div>
+
+            {menuActivity.logbookStatus === 'approved' && (
+                <div className="px-4 pb-8">
+                    <button
+                        onClick={() => { /* handle cert SAL */ }}
+                        className="w-full py-4 rounded-2xl border-2 border-primary text-primary font-black text-sm uppercase tracking-widest active:bg-primary/10 transition-colors flex items-center justify-center gap-2"
+                    >
+                        <ShieldCheck size={14} /> CERTIFICA SAL
+                    </button>
+                </div>
+            )}
           </div>
         </>
       )}
 
       {/* Modals */}
       {logbookModal && (
-        <MobileLogbookWriter
-          activity={logbookModal}
-          userId={profile?.id}
-          userRole={profile?.role || 'crew'}
-          onClose={() => setLogbookModal(null)}
-        />
+          <LogbookEntryModal 
+              activity={logbookModal} 
+              profile={profile}
+              entryMeta={logbookModal.logbookEntry}
+              onClose={() => setLogbookModal(null)} 
+              onSaved={fetchActivities}
+          />
       )}
+      
       {chatModal && (
         <ActivityChatModal
           activity={chatModal}
