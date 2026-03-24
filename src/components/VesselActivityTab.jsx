@@ -149,7 +149,8 @@ export default function VesselActivityTab() {
 
     return (
         <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-1000 pb-20">
-            {perms.adminDashboard ? (
+            {/* KPI STATS & ARCHIVE visibili solo agli admin */}
+            {perms.adminDashboard && (
                 <>
                     {/* KPI STATS ROW */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -175,6 +176,7 @@ export default function VesselActivityTab() {
                             </div>
                         ))}
                     </div>
+
 
                     {/* KPI ARCHIVE SECTION - COMPACT */}
                     <div className="bg-white/50 backdrop-blur-md rounded-3xl p-5 lg:p-6 border border-white shadow-sm mb-4">
@@ -259,9 +261,11 @@ export default function VesselActivityTab() {
                             </div>
                         )}
                     </div>
+                </>
+            )}
 
-                    {/* TOOLBAR COMPACT - OPTIMIZED */}
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white/50 backdrop-blur-md rounded-[1.5rem] p-1.5 border border-white shadow-sm">
+            {/* TOOLBAR COMPACT - OPTIMIZED */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white/50 backdrop-blur-md rounded-[1.5rem] p-1.5 border border-white shadow-sm">
                         <div className="flex items-center gap-3 px-4 py-2 bg-white rounded-[1.25rem] border border-surface-low/30 shadow-inner max-w-xs flex-1 ml-0.5">
                             <Search size={14} className="text-on-surface/20" />
                             <input type="text" placeholder="Search activities..." className="bg-transparent border-none outline-none text-[11px] font-bold text-on-surface w-full placeholder:text-on-surface/20 uppercase tracking-tight" value={search} onChange={e => setSearch(e.target.value)} />
@@ -275,17 +279,24 @@ export default function VesselActivityTab() {
                                 <div className="w-px h-4 bg-surface-low/30" />
                                 <select value={vesselFilter} onChange={e => setVesselFilter(e.target.value)} className="bg-transparent pl-2 pr-4 py-2 text-[9px] font-black uppercase text-on-surface outline-none cursor-pointer hover:bg-surface-low/10 transition-colors">
                                     <option value="All">All Vessels</option>
-                                    {vessels?.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
+                                    {perms.adminDashboard ? (
+                                        vessels?.map(v => <option key={v.id} value={v.name}>{v.name}</option>)
+                                    ) : (
+                                        <option value={userProfile?.vesselName || 'Crew'}>{userProfile?.vesselName || 'My Vessel'}</option>
+                                    )}
                                 </select>
                             </div>
                             
-                            <button onClick={handleExportExcel} className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-surface-low/30 px-4 py-2 rounded-xl text-[9px] font-black text-on-surface/50 uppercase tracking-widest transition-all shadow-sm">
-                                <FileText size={12} className="text-primary/60" /> Export
-                            </button>
-                            
-                            <button onClick={handleCloseMonth} className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 active:scale-95 px-5 py-2 rounded-xl text-[9px] font-black text-white uppercase tracking-widest shadow-md shadow-red-200 transition-all">
-                                <ShieldCheck size={12} /> Certify SAL
-                            </button>
+                            {perms.adminDashboard && (
+                                <>
+                                    <button onClick={handleExportExcel} className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-surface-low/30 px-4 py-2 rounded-xl text-[9px] font-black text-on-surface/50 uppercase tracking-widest transition-all shadow-sm">
+                                        <FileText size={12} className="text-primary/60" /> Export
+                                    </button>
+                                    <button onClick={handleCloseMonth} className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 active:scale-95 px-5 py-2 rounded-xl text-[9px] font-black text-white uppercase tracking-widest shadow-md shadow-red-200 transition-all">
+                                        <ShieldCheck size={12} /> Certify SAL
+                                    </button>
+                                </>
+                            )}
                             
                             <button onClick={fetchActivities} className={`w-9 h-9 bg-white border border-surface-low/30 text-on-surface/20 rounded-full flex items-center justify-center transition-all hover:text-primary hover:border-primary/30 shadow-sm ${loading ? 'animate-spin border-primary' : ''}`}>
                                 <RefreshCw size={14} />
@@ -374,19 +385,12 @@ export default function VesselActivityTab() {
                                 ))}
                             </tbody>
                         </table>
+                        {!filtered.length && (
+                            <div className="py-12 text-center text-on-surface/40 font-bold text-sm">
+                                Nessuna attività trovata in questo periodo.
+                            </div>
+                        )}
                     </div>
-                </>
-            ) : (
-                <div className="flex items-center justify-center py-20 bg-white/50 backdrop-blur-md rounded-3xl border border-white shadow-sm">
-                    <div className="text-center space-y-3">
-                        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mx-auto">
-                            <Wind size={32} className="animate-pulse" />
-                        </div>
-                        <h2 className="text-xl font-manrope font-black text-on-surface">Fleet Overview Active</h2>
-                        <p className="text-sm font-bold text-on-surface/40 max-w-xs mx-auto">Use the map above to track your fleet's live positions and status.</p>
-                    </div>
-                </div>
-            )}
 
             {logbookActivity && <LogbookModal activity={logbookActivity} userId={userProfile?.id} userRole={userProfile?.role} onClose={() => setLogbookActivity(null)} />}
             {chatActivity && <ActivityChatModal activity={chatActivity} profile={userProfile} onClose={() => { setChatActivity(null); fetchActivities(); }} />}

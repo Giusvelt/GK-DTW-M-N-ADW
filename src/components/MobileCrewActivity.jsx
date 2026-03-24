@@ -71,10 +71,9 @@ export default function MobileCrewActivity() {
     );
   }
 
-  // ─── Empty State ───────────────────────────────────────────────
   if (!myActivities.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+      <div className="flex flex-col items-center justify-center py-24 gap-4 text-center px-4">
         <div className="w-16 h-16 rounded-full bg-surface-low flex items-center justify-center">
           <AlertCircle size={28} className="text-on-surface/20" />
         </div>
