@@ -67,14 +67,21 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
         // Arrival maneuver
         arr_pilot_call: fmt(sf.arrival_pilot_call),
         arr_pilot_in: fmt(sf.arrival_pilot_in),
+        arr_pilot_out: fmt(sf.arrival_pilot_out),
         arr_mooring_in: fmt(sf.arrival_mooring_in),
+        arr_mooring_out: fmt(sf.arrival_mooring_out),
         arr_tug_in: fmt(sf.arrival_tug_in),
-        arr_tug_count: sf.arrival_tug_count != null ? String(sf.arrival_tug_count) : '2',
+        arr_tug_out: fmt(sf.arrival_tug_out),
+        arr_tug_count: sf.arrival_tug_count != null ? String(sf.arrival_tug_count) : '0',
         // Departure maneuver
+        dep_pilot_call: fmt(sf.departure_pilot_call),
+        dep_pilot_in: fmt(sf.departure_pilot_in),
         dep_pilot_out: fmt(sf.departure_pilot_out),
+        dep_mooring_in: fmt(sf.departure_mooring_in),
         dep_mooring_out: fmt(sf.departure_mooring_out),
+        dep_tug_in: fmt(sf.departure_tug_in),
         dep_tug_out: fmt(sf.departure_tug_out),
-        dep_tug_count: sf.departure_tug_count != null ? String(sf.departure_tug_count) : '2',
+        dep_tug_count: sf.departure_tug_count != null ? String(sf.departure_tug_count) : '0',
         // Narrative
         narrative: entryMeta?.narrative_text || '',
     });
@@ -109,12 +116,19 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                 actual_bunker_tonnes: form.actual_bunker ? Number(form.actual_bunker) : null,
                 arrival_pilot_call: form.arr_pilot_call ? new Date(form.arr_pilot_call).toISOString() : null,
                 arrival_pilot_in: form.arr_pilot_in ? new Date(form.arr_pilot_in).toISOString() : null,
+                arrival_pilot_out: form.arr_pilot_out ? new Date(form.arr_pilot_out).toISOString() : null,
                 arrival_mooring_in: form.arr_mooring_in ? new Date(form.arr_mooring_in).toISOString() : null,
+                arrival_mooring_out: form.arr_mooring_out ? new Date(form.arr_mooring_out).toISOString() : null,
                 arrival_tug_count: Number(form.arr_tug_count) || 0,
                 arrival_tug_in: form.arr_tug_in ? new Date(form.arr_tug_in).toISOString() : null,
+                arrival_tug_out: form.arr_tug_out ? new Date(form.arr_tug_out).toISOString() : null,
+                departure_pilot_call: form.dep_pilot_call ? new Date(form.dep_pilot_call).toISOString() : null,
+                departure_pilot_in: form.dep_pilot_in ? new Date(form.dep_pilot_in).toISOString() : null,
                 departure_pilot_out: form.dep_pilot_out ? new Date(form.dep_pilot_out).toISOString() : null,
+                departure_mooring_in: form.dep_mooring_in ? new Date(form.dep_mooring_in).toISOString() : null,
                 departure_mooring_out: form.dep_mooring_out ? new Date(form.dep_mooring_out).toISOString() : null,
                 departure_tug_count: Number(form.dep_tug_count) || 0,
+                departure_tug_in: form.dep_tug_in ? new Date(form.dep_tug_in).toISOString() : null,
                 departure_tug_out: form.dep_tug_out ? new Date(form.dep_tug_out).toISOString() : null,
             };
 
@@ -329,7 +343,10 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                                                 <span className="lem-label">Pilot On Board (IN)</span>
                                                 <input type="datetime-local" className="lem-input lem-input-sm" value={form.arr_pilot_in} onChange={e => set('arr_pilot_in', e.target.value)} disabled={isSubmitted} />
                                             </label>
-                                            <div className="lem-field lem-spacer" />
+                                            <label className="lem-field">
+                                                <span className="lem-label">Pilot Disembarked (OUT)</span>
+                                                <input type="datetime-local" className="lem-input lem-input-sm" value={form.arr_pilot_out} onChange={e => set('arr_pilot_out', e.target.value)} disabled={isSubmitted} />
+                                            </label>
                                         </div>
 
                                         {/* Ormeggiatori */}
@@ -344,7 +361,10 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                                                     <span className="lem-label">First Line Ashore (IN)</span>
                                                     <input type="datetime-local" className="lem-input lem-input-sm" value={form.arr_mooring_in} onChange={e => set('arr_mooring_in', e.target.value)} disabled={isSubmitted} />
                                                 </label>
-                                                <div className="lem-field lem-spacer" />
+                                                <label className="lem-field">
+                                                    <span className="lem-label">All Fast (OUT)</span>
+                                                    <input type="datetime-local" className="lem-input lem-input-sm" value={form.arr_mooring_out} onChange={e => set('arr_mooring_out', e.target.value)} disabled={isSubmitted} />
+                                                </label>
                                             </div>
                                         )}
 
@@ -364,10 +384,13 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                                                     </div>
                                                 </label>
                                                 <label className="lem-field">
-                                                    <span className="lem-label">Tugs Dismissed (IN)</span>
+                                                    <span className="lem-label">Tugs Made Fast (IN)</span>
                                                     <input type="datetime-local" className="lem-input lem-input-sm" value={form.arr_tug_in} onChange={e => set('arr_tug_in', e.target.value)} disabled={isSubmitted} />
                                                 </label>
-                                                <div className="lem-field lem-spacer" />
+                                                <label className="lem-field">
+                                                    <span className="lem-label">Tugs Dismissed (OUT)</span>
+                                                    <input type="datetime-local" className="lem-input lem-input-sm" value={form.arr_tug_out} onChange={e => set('arr_tug_out', e.target.value)} disabled={isSubmitted} />
+                                                </label>
                                             </div>
                                         )}
                                     </div>
@@ -392,12 +415,18 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                                                 <span className="lem-svc-code">PIL</span>
                                                 <span>Pilot</span>
                                             </div>
-                                            <div className="lem-field" />
+                                            <label className="lem-field">
+                                                <span className="lem-label">VHF Call</span>
+                                                <input type="datetime-local" className="lem-input lem-input-sm" value={form.dep_pilot_call} onChange={e => set('dep_pilot_call', e.target.value)} disabled={isSubmitted} />
+                                            </label>
+                                            <label className="lem-field">
+                                                <span className="lem-label">Pilot On Board (IN)</span>
+                                                <input type="datetime-local" className="lem-input lem-input-sm" value={form.dep_pilot_in} onChange={e => set('dep_pilot_in', e.target.value)} disabled={isSubmitted} />
+                                            </label>
                                             <label className="lem-field">
                                                 <span className="lem-label">Pilot Disembarked (OUT)</span>
                                                 <input type="datetime-local" className="lem-input lem-input-sm" value={form.dep_pilot_out} onChange={e => set('dep_pilot_out', e.target.value)} disabled={isSubmitted} />
                                             </label>
-                                            <div className="lem-field lem-spacer" />
                                         </div>
 
                                         {/* Ormeggiatori */}
@@ -409,10 +438,13 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                                                 </div>
                                                 <div className="lem-field" />
                                                 <label className="lem-field">
+                                                    <span className="lem-label">Singled Up (IN)</span>
+                                                    <input type="datetime-local" className="lem-input lem-input-sm" value={form.dep_mooring_in} onChange={e => set('dep_mooring_in', e.target.value)} disabled={isSubmitted} />
+                                                </label>
+                                                <label className="lem-field">
                                                     <span className="lem-label">Last Line Clear (OUT)</span>
                                                     <input type="datetime-local" className="lem-input lem-input-sm" value={form.dep_mooring_out} onChange={e => set('dep_mooring_out', e.target.value)} disabled={isSubmitted} />
                                                 </label>
-                                                <div className="lem-field lem-spacer" />
                                             </div>
                                         )}
 
@@ -432,10 +464,13 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                                                     </div>
                                                 </label>
                                                 <label className="lem-field">
+                                                    <span className="lem-label">Tugs Made Fast (IN)</span>
+                                                    <input type="datetime-local" className="lem-input lem-input-sm" value={form.dep_tug_in} onChange={e => set('dep_tug_in', e.target.value)} disabled={isSubmitted} />
+                                                </label>
+                                                <label className="lem-field">
                                                     <span className="lem-label">Tugs Dismissed (OUT)</span>
                                                     <input type="datetime-local" className="lem-input lem-input-sm" value={form.dep_tug_out} onChange={e => set('dep_tug_out', e.target.value)} disabled={isSubmitted} />
                                                 </label>
-                                                <div className="lem-field lem-spacer" />
                                             </div>
                                         )}
                                     </div>

@@ -7,7 +7,7 @@ import {
     ArrowDownRight, ArrowUpRight, Search, Edit3, Check, X, Trash2, Plus,
     BookOpen, ShieldCheck, Wind, BarChart2, CalendarDays, MessageSquare, ChevronRight, FileText, CheckCircle
 } from 'lucide-react';
-import LogbookModal from './LogbookModal';
+import LogbookEntryModal from './LogbookEntryModal';
 import ActivityChatModal from './ActivityChatModal';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { can } from '../lib/permissions';
@@ -403,7 +403,15 @@ export default function VesselActivityTab() {
                         )}
                     </div>
 
-            {logbookActivity && <LogbookModal activity={logbookActivity} userId={userProfile?.id} userRole={userProfile?.role} onClose={() => setLogbookActivity(null)} />}
+            {logbookActivity && (
+                <LogbookEntryModal 
+                    activity={logbookActivity} 
+                    profile={userProfile}
+                    entryMeta={logbookActivity.logbookEntry} // assuming activity has logbookEntry or we just pass empty
+                    onClose={() => setLogbookActivity(null)} 
+                    onSaved={fetchActivities}
+                />
+            )}
             {chatActivity && <ActivityChatModal activity={chatActivity} profile={userProfile} onClose={() => { setChatActivity(null); fetchActivities(); }} />}
         </div>
     );
