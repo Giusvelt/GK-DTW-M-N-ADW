@@ -49,7 +49,6 @@ const TimeInput = ({ label, value, onChange, disabled, baseDate }) => {
                     }}
                     disabled={disabled}
                 />
-                <Clock size={14} className="lem-time-icon" />
             </div>
         </div>
     );
