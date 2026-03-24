@@ -24,10 +24,10 @@ export default function ProductionTargetTab() {
         }
     });
 
-    const globalPlan = (productionPlans || []).find(p => p.vessel_id === null && p.period_name === currentPeriod);
-
     const [summaryEdit, setSummaryEdit] = useState(null); 
     const [vesselEdits, setVesselEdits] = useState({});
+
+    const globalPlan = (productionPlans || []).find(p => p.vessel_id === null && p.period_name === currentPeriod);
 
     const sumTargets = (productionPlans || [])
         .filter(p => p.period_name === currentPeriod && p.vessel_id !== null)

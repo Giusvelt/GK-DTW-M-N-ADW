@@ -44,8 +44,7 @@ const activityColor = (activity) => {
 export default function VesselActivityTab() {
     const {
         activities, vessels, geofences, lastUpdate, loading,
-        fetchActivities, crewVesselId, companyVesselIds, profile: userProfile, productionPlans,
-        fleetKPIs
+        fetchActivities, crewVesselId, companyVesselIds, profile: userProfile, productionPlans, fleetKPIs
     } = useData();
     const perms = can(userProfile?.role);
 
@@ -124,7 +123,7 @@ export default function VesselActivityTab() {
              }
         });
         return Object.values(groups).sort((a,b) => b.year - a.year || b.month - a.month);
-    }, [fleetKPIs, productionPlans]);
+    }, [activities, productionPlans]);
 
     const handleCloseMonth = async () => {
         if (!confirm('Close current month and generate Certified SAL?')) return;
