@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
-import { Target, TrendingUp, Package, Edit2, Check, X, Ship } from 'lucide-react';
+import { Target, TrendingUp, Package, Edit2, Check, X, Ship, Trash2 } from 'lucide-react';
 import SectionHeader from './SectionHeader';
 
 export default function ProductionTargetTab() {
-    const { vessels, productionPlans, upsertPlan, updateVessel, activities } = useData();
+    const { vessels, productionPlans, upsertPlan, updateVessel, deleteVessel, activities } = useData();
 
     const now = new Date();
     const currentPeriod = now.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
@@ -48,7 +48,6 @@ export default function ProductionTargetTab() {
                 actual_trips: 0,
                 actual_quantity: 0
             };
-            // FIX BUG DUPLICAZIONE: Passare l'ID per l'update, sennò fa un nuovo insert
             if (globalPlan?.id) planPayload.id = globalPlan.id;
 
             await upsertPlan(planPayload);
@@ -58,12 +57,23 @@ export default function ProductionTargetTab() {
         }
     };
 
+    const handleDeleteVessel = async (vesselId, vesselName) => {
+        const confirmDelete = window.confirm(`ATTENZIONE OPERAZIONE DISTRUTTIVA!\nStai per eliminare per sempre la nave "${vesselName}". Tutte le card ed eventi legati potrebbero essere cancellati. Sei sicuro di voler procedere?`);
+        if (!confirmDelete) return;
+
+        try {
+            const result = await deleteVessel(vesselId);
+            if (!result.success) throw new Error(result.error || 'Errore database');
+        } catch (error) {
+            alert('Impossibile eliminare la nave. Potrebbe avere attività collegate nel database (Violazione chiave esterna). Errore: ' + error.message);
+        }
+    };
+
     const handleSaveVessel = async (vesselId) => {
         const edit = vesselEdits[vesselId];
         if (!edit) return;
 
         try {
-            // Update Vessel Avg Cargo
             if (edit.cargo !== undefined) {
                 await updateVessel(vesselId, { avg_cargo: Number(edit.cargo) });
             }
@@ -84,7 +94,6 @@ export default function ProductionTargetTab() {
                 actual_quantity: actualTrips * cargo, 
             };
             
-            // FIX BUG DUPLICAZIONE: Passare l'ID assicura che faccia UPDATE della riga esistente
             if (plan?.id) planPayload.id = plan.id; 
 
             await upsertPlan(planPayload);
@@ -204,7 +213,7 @@ export default function ProductionTargetTab() {
                                         <div className="w-6 h-6 rounded-md bg-on-surface/5 flex items-center justify-center text-primary">
                                             <Ship size={14} />
                                         </div>
-                                        <h4 className="font-manrope font-extrabold text-[13px] uppercase tracking-tight text-on-surface mt-0.5">{vessel.name}</h4>
+                                        <h4 className="font-manrope font-extrabold text-[13px] tracking-tight text-on-surface mt-0.5">{vessel.name}</h4>
                                     </div>
                                     {isEditing ? (
                                         <div className="flex items-center gap-1.5">
@@ -216,9 +225,14 @@ export default function ProductionTargetTab() {
                                             </button>
                                         </div>
                                     ) : (
-                                        <button className="text-on-surface/30 hover:text-primary transition-colors mt-1" onClick={() => setVesselEdits({ ...vesselEdits, [vessel.id]: { cargo: vessel.avg_cargo || 0, trips: plan?.target_trips || 0 } })}>
-                                            <Edit2 size={12} />
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button className="text-red-500/30 hover:text-red-600 transition-colors mt-1" onClick={() => handleDeleteVessel(vessel.id, vessel.name)} title="Elimina Nave">
+                                                <Trash2 size={13} />
+                                            </button>
+                                            <button className="text-on-surface/30 hover:text-primary transition-colors mt-1" onClick={() => setVesselEdits({ ...vesselEdits, [vessel.id]: { cargo: vessel.avg_cargo || 0, trips: plan?.target_trips || 0 } })}>
+                                                <Edit2 size={13} />
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
 
