@@ -67,7 +67,7 @@ export function DataProvider({ children }) {
     useEffect(() => {
         if (!profile) return;
         if (profile.role === 'crew' && !crewVesselId) return;
-        fetchActivities(profile.role === 'crew' ? crewVesselId : null);
+        fetchActivities(profile.role === 'crew' ? crewVesselId : null, profile.role);
     }, [profile, crewVesselId, fetchActivities]);
 
     // Vessel Positions Logic

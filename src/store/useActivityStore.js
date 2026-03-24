@@ -8,7 +8,7 @@ export const useActivityStore = create((set, get) => ({
     error: null,
     lastUpdate: null,
 
-    fetchActivities: async (vesselId = null) => {
+    fetchActivities: async (vesselId = null, userRole = null) => {
         set({ loading: true });
         try {
             let query = supabase
@@ -45,7 +45,7 @@ export const useActivityStore = create((set, get) => ({
                 status: row.status === 'active' ? 'in-progress' : 'completed',
                 logbookStatus: row.logbook_entries?.[0]?.status || 'none',
                 deliveredQty: row.logbook_entries?.[0]?.structured_fields?.actual_cargo_tonnes || null,
-                msgCount: row.activity_messages?.length || 0 // Simplification for now
+                msgCount: row.activity_messages?.filter(m => !m.is_read && m.sender_role !== userRole).length || 0
             }));
 
             set({ 
