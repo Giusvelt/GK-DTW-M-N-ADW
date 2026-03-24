@@ -72,16 +72,6 @@ export function DataProvider({ children }) {
         fetchActivities(profile.role === 'crew' ? crewVesselId : null, profile.role);
     }, [profile, crewVesselId, fetchActivities]);
 
-    // Fetch master plans and KPIs always
-    useEffect(() => {
-        fetchPlants();
-        fetchVessels();
-        fetchGeofences();
-        fetchPlans();
-        fetchFleetKPIs();
-        fetchVesselKPIs();
-    }, [fetchPlants, fetchVessels, fetchGeofences, fetchPlans, fetchFleetKPIs, fetchVesselKPIs]);
-
     // Vessel Positions Logic
     useEffect(() => {
         if (!vessels?.length || !profile) return;

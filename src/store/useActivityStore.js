@@ -23,6 +23,7 @@ export const useActivityStore = create((set, get) => ({
                     logbook_entries ( status, structured_fields ),
                     activity_messages ( id, is_read, sender_role )
                 `)
+                .or('duration_minutes.gte.20,duration_minutes.is.null')
                 .order('start_time', { ascending: false });
             
             if (vesselId) {
