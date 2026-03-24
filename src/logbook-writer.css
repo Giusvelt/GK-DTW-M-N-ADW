@@ -401,6 +401,77 @@
     margin-top: -2px;
 }
 
+/* Nautical Time Picker Styles */
+.lem-time-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.lem-time-box {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    height: 40px;
+}
+
+.lem-time-box:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.lem-time-box.disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+.lem-time-date-ref {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    padding: 0 12px;
+    height: 100%;
+    border-right: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.lem-time-field {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.lem-time-field:disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.lem-time-icon {
+    margin-right: 12px;
+    color: #94a3b8;
+}
+
+.lem-time-box:focus-within .lem-time-icon {
+    color: #3b82f6;
+}
+
 .lem-cargo-row {
     display: flex;
     align-items: flex-end;
