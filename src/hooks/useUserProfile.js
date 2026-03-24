@@ -32,10 +32,10 @@ export function useUserProfile() {
                 permissions:  can(role, data.custom_overrides || {}),
                 custom_overrides: data.custom_overrides || {},
 
-                // Nave: Ora l'unica verità è il campo MMSI scritto fisicamente nel profilo
+                // Nave: Ora l'unica verità è il campo MMSI, ma con fallback se assente (retrocompatibilità script)
                 vesselId:     data.vessel_id,
                 vesselName:   data.vessels?.name || null,
-                mmsi:         data.mmsi || null, // Niente più fallback automatico dalla tabella vessels
+                mmsi:         data.mmsi || data.vessels?.mmsi || null, 
 
                 // Compagnia
                 companyId:    data.company_id,
