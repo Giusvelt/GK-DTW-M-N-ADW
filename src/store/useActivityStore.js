@@ -78,5 +78,16 @@ export const useActivityStore = create((set, get) => ({
         } catch (err) {
             return { success: false, error: err.message };
         }
+    },
+
+    deletePlan: async (id) => {
+        try {
+            const { error } = await supabase.from('production_plans').delete().eq('id', id);
+            if (error) throw error;
+            get().fetchPlans();
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
     }
 }));

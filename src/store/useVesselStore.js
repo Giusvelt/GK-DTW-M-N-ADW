@@ -30,6 +30,41 @@ export const useVesselStore = create((set, get) => ({
         }
     },
 
+    addVessel: async (vessel) => {
+        try {
+            const { data, error } = await supabase.from('vessels').insert(vessel).select().single();
+            if (error) throw error;
+            set(state => ({ vessels: [...state.vessels, data] }));
+            return { success: true, data };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    },
+
+    updateVessel: async (id, updates) => {
+        try {
+            const { error } = await supabase.from('vessels').update(updates).eq('id', id);
+            if (error) throw error;
+            set(state => ({
+                vessels: state.vessels.map(v => v.id === id ? { ...v, ...updates } : v)
+            }));
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    },
+
+    deleteVessel: async (id) => {
+        try {
+            const { error } = await supabase.from('vessels').delete().eq('id', id);
+            if (error) throw error;
+            set(state => ({ vessels: state.vessels.filter(v => v.id !== id) }));
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    },
+
     /**
      * Load historical positions from Supabase tracking table.
      */
