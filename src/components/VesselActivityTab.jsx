@@ -44,7 +44,8 @@ const activityColor = (activity) => {
 export default function VesselActivityTab() {
     const {
         activities, vessels, geofences, lastUpdate, loading,
-        fetchActivities, crewVesselId, companyVesselIds, profile: userProfile, productionPlans
+        fetchActivities, crewVesselId, companyVesselIds, profile: userProfile, productionPlans,
+        fleetKPIs
     } = useData();
     const perms = can(userProfile?.role);
 
@@ -93,23 +94,37 @@ export default function VesselActivityTab() {
 
     const kpiByMonth = useMemo(() => {
         const groups = {};
-        (activities || []).forEach(a => {
-            const d = new Date(a.startTime);
-            const key = `${d.getFullYear()}-${d.getMonth()}`;
-            if (!groups[key]) groups[key] = { month: d.getMonth(), year: d.getFullYear(), loading: 0, navigation: 0, unloading: 0, deliveredTons: 0, goalTons: 0 };
-            if (a.activity === 'Loading') groups[key].loading++;
-            if (a.activity === 'Navigation') groups[key].navigation++;
-            if (a.activity === 'Unloading') {
-                groups[key].unloading++;
-                groups[key].deliveredTons += (a.deliveredQty || 0);
-            }
+        
+        // Data estrapolata in tempo zero dalle Supabase Views
+        (fleetKPIs || []).forEach(k => {
+            const jsMonth = k.month - 1; 
+            const key = `${k.year}-${jsMonth}`;
+            groups[key] = { 
+                month: jsMonth, 
+                year: k.year, 
+                loading: k.loading_count || 0, 
+                navigation: k.navigation_count || 0, 
+                unloading: k.unloading_count || 0, 
+                deliveredTons: k.delivered_tons || 0, 
+                goalTons: 0 
+            };
         });
+
+        // Apprendimento Goal dai Piani di Produzione Master (vessel_id = null)
         (productionPlans || []).forEach(p => {
-             const key = `${p.year}-${p.month - 1}`;
-             if (groups[key]) groups[key].goalTons = (p.target_quantity || 0);
+             if (p.vessel_id === null && p.period_name) {
+                 try {
+                     const [mName, yStr] = p.period_name.split(' ');
+                     const mIdx = MONTHS.indexOf(mName);
+                     if (mIdx !== -1 && yStr) {
+                         const key = `${yStr}-${mIdx}`;
+                         if (groups[key]) groups[key].goalTons = p.target_quantity || 0;
+                     }
+                 } catch(e) {}
+             }
         });
         return Object.values(groups).sort((a,b) => b.year - a.year || b.month - a.month);
-    }, [activities, productionPlans]);
+    }, [fleetKPIs, productionPlans]);
 
     const handleCloseMonth = async () => {
         if (!confirm('Close current month and generate Certified SAL?')) return;

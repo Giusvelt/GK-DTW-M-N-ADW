@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase';
 export const useActivityStore = create((set, get) => ({
     activities: [],
     productionPlans: [],
+    fleetKPIs: [],
+    vesselKPIs: [],
     loading: false,
     error: null,
     lastUpdate: null,
@@ -56,6 +58,26 @@ export const useActivityStore = create((set, get) => ({
             set({ error: err.message });
         } finally {
             set({ loading: false });
+        }
+    },
+
+    fetchFleetKPIs: async () => {
+        try {
+            const { data, error } = await supabase.from('monthly_fleet_kpi').select('*');
+            if (error) throw error;
+            set({ fleetKPIs: data || [] });
+        } catch (err) {
+            console.error(err);
+        }
+    },
+
+    fetchVesselKPIs: async () => {
+        try {
+            const { data, error } = await supabase.from('monthly_vessel_kpi').select('*');
+            if (error) throw error;
+            set({ vesselKPIs: data || [] });
+        } catch (err) {
+            console.error(err);
         }
     },
 

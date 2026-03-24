@@ -4,31 +4,30 @@ import { Target, TrendingUp, Package, Edit2, Check, X, Ship, Trash2 } from 'luci
 import SectionHeader from './SectionHeader';
 
 export default function ProductionTargetTab() {
-    const { vessels, productionPlans, upsertPlan, updateVessel, deleteVessel, activities } = useData();
+    const { vessels, productionPlans, upsertPlan, updateVessel, deleteVessel, vesselKPIs } = useData();
 
     const now = new Date();
     const currentPeriod = now.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
 
-    // Calculate actual trips from vessel activities (Unloading) and drifting
+    const currentMonth = now.getMonth() + 1; // 1-12 for SQL matching
+    const currentYear = now.getFullYear();
+
+    // Fast-Lane: Estrazione immediata dalle View Materializzate PostgreSQL
     const actualTripsMap = {};
-    (activities || []).forEach(a => {
-        if (a.activity !== 'Unloading') return;
-        const d = new Date(a.startTime);
-        if (isNaN(d)) return;
-        if (d.toLocaleString('en-GB', { month: 'long', year: 'numeric' }) === currentPeriod) {
-            actualTripsMap[a.vesselId] = (actualTripsMap[a.vesselId] || 0) + 1;
+    let deliveredTotal = 0;
+
+    (vesselKPIs || []).forEach(kpi => {
+        if (kpi.month === currentMonth && kpi.year === currentYear) {
+            actualTripsMap[kpi.vessel_id] = kpi.actual_trips || 0;
+            // Se abbiamo certificato il logbook usiamo il tonnellaggio vero, altrimenti stima:
+            deliveredTotal += (kpi.actual_quantity_certified > 0 ? kpi.actual_quantity_certified : kpi.actual_quantity_estimated || 0);
         }
     });
 
+    const globalPlan = (productionPlans || []).find(p => p.vessel_id === null && p.period_name === currentPeriod);
+
     const [summaryEdit, setSummaryEdit] = useState(null); 
     const [vesselEdits, setVesselEdits] = useState({});
-
-    const deliveredTotal = (vessels || []).reduce((s, v) => {
-        const trips = actualTripsMap[v.id] || 0;
-        return s + (trips * (v.avg_cargo || 0));
-    }, 0);
-
-    const globalPlan = (productionPlans || []).find(p => p.vessel_id === null && p.period_name === currentPeriod);
 
     const sumTargets = (productionPlans || [])
         .filter(p => p.period_name === currentPeriod && p.vessel_id !== null)

@@ -25,8 +25,8 @@ export function DataProvider({ children }) {
     } = useGeofenceStore();
 
     const { 
-        activities, productionPlans, loading: activitiesLoading, lastUpdate,
-        fetchActivities, upsertPlan, deletePlan, fetchPlans 
+        activities, productionPlans, fleetKPIs, vesselKPIs, loading: activitiesLoading, lastUpdate,
+        fetchActivities, upsertPlan, deletePlan, fetchPlans, fetchFleetKPIs, fetchVesselKPIs
     } = useActivityStore();
 
     const { 
@@ -61,7 +61,9 @@ export function DataProvider({ children }) {
         fetchReasons();
         fetchSchedules();
         fetchPlans();
-    }, [fetchVessels, fetchGeofences, fetchReasons, fetchSchedules, fetchPlans]);
+        fetchFleetKPIs();
+        fetchVesselKPIs();
+    }, [fetchVessels, fetchGeofences, fetchReasons, fetchSchedules, fetchPlans, fetchFleetKPIs, fetchVesselKPIs]);
 
     // Fetch activities
     useEffect(() => {
@@ -69,6 +71,16 @@ export function DataProvider({ children }) {
         if (profile.role === 'crew' && !crewVesselId) return;
         fetchActivities(profile.role === 'crew' ? crewVesselId : null, profile.role);
     }, [profile, crewVesselId, fetchActivities]);
+
+    // Fetch master plans and KPIs always
+    useEffect(() => {
+        fetchPlants();
+        fetchVessels();
+        fetchGeofences();
+        fetchPlans();
+        fetchFleetKPIs();
+        fetchVesselKPIs();
+    }, [fetchPlants, fetchVessels, fetchGeofences, fetchPlans, fetchFleetKPIs, fetchVesselKPIs]);
 
     // Vessel Positions Logic
     useEffect(() => {
@@ -100,6 +112,7 @@ export function DataProvider({ children }) {
 
     const value = useMemo(() => ({
         vessels, vesselPositions, geofences, activities, productionPlans,
+        fleetKPIs, vesselKPIs,
         standbyReasons, schedules,
         profile, crewVesselId, companyVesselIds, lastUpdate,
         loading: vesselsLoading || geofencesLoading || activitiesLoading,
@@ -113,6 +126,7 @@ export function DataProvider({ children }) {
         addStandbyReason, updateStandbyReason, deleteStandbyReason
     }), [
         vessels, vesselPositions, geofences, activities, productionPlans,
+        fleetKPIs, vesselKPIs,
         standbyReasons, schedules, profile, crewVesselId, companyVesselIds, lastUpdate,
         vesselsLoading, geofencesLoading, activitiesLoading,
         fetchVessels, addVessel, updateVessel, deleteVessel,
