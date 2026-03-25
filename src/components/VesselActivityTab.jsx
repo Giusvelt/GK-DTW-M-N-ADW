@@ -363,7 +363,7 @@ export default function VesselActivityTab() {
                                                 >
                                                     <CheckCircle size={12} /> Certified
                                                 </button>
-                                            ) : perms.submitLogbook ? (
+                                            ) : (perms.submitLogbook && (perms.isCrew || perms.isCrewAdmin)) ? (
                                                 <button 
                                                     onClick={() => setLogbookActivity(a)} 
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto bg-white text-primary border-surface-low/50 hover:bg-primary hover:text-white shadow-sm"

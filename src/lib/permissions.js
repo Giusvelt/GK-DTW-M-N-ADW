@@ -72,15 +72,16 @@ export const can = (role, overrides = {}) => {
         showMap:                check(isOperation || isOperationAdmin, 'show_map') || check(isOperation || isOperationAdmin, 'see_all_vessels'),
 
         // ── Logbook ──────────────────────────────────────────────────
-        /** POTERE EXTRA: Può compilare e sottomettere il logbook */
-        submitLogbook:          check(isCrew || isCrewAdmin, 'access_logbook'),
+        /** POTERE EXTRA: Può compilare e sottomettere il logbook (ESCLUSIVO CREW) */
+        submitLogbook:          (isCrew || isCrewAdmin) && check(true, 'access_logbook'),
         /** Può leggere i logbook (sempre vero per il proprio scope) */
         readLogbook:            true,
         /** Può approvare o rifiutare un logbook */
         approveLogbook:         isOperation || isOperationAdmin,
 
         // ── Attività (Vessel Activity) ───────────────────────────────
-        editActivities:         isCrew || isCrewAdmin,
+        /** Può modificare le attività (ESCLUSIVO CREW) */
+        editActivities:         (isCrew || isCrewAdmin),
         deleteActivities:       false, // Blindato per tutti
 
         // ── Tab Visibilità ────────────────────────────────────────────
