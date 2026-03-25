@@ -126,8 +126,8 @@ function ActivityDashboard({ onSignOut }) {
       {/* Header — Kinetic Style */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-surface-low/30 h-16 sm:h-20 lg:h-24 px-6 sm:px-10 lg:px-16 flex items-center justify-between">
         <div className="flex items-center gap-4 lg:gap-6">
-          <div className="w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
-            <Anchor size={28} className="text-white lg:scale-125" />
+          <div className="w-10 h-10 lg:w-14 lg:h-14 overflow-hidden rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30 bg-white border border-surface-low/10">
+            <img src="/logo_gk.png" alt="GeoKanban Logo" className="w-full h-full object-contain p-1" />
           </div>
           <div>
             <h1 className="font-manrope font-extrabold text-xl lg:text-2xl text-on-surface tracking-tight leading-none mb-1">GeoKanban V3</h1>
