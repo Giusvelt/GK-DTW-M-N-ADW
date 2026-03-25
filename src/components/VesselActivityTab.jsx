@@ -356,28 +356,17 @@ export default function VesselActivityTab() {
                                         </td>
                                         <td className="px-4 py-3 bg-white text-[9px] font-black text-on-surface/20 uppercase">{calcDuration(a.startTime, a.endTime) || '—'}</td>
                                         <td className="px-4 py-3 bg-white text-center">
-                                            {a.logbookStatus === 'submitted' || a.logbookStatus === 'approved' ? (
-                                                <button 
-                                                    onClick={() => setLogbookActivity(a)} 
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto bg-green-50 text-green-600 border-green-200"
-                                                >
-                                                    <CheckCircle size={12} /> Certified
-                                                </button>
-                                            ) : (perms.submitLogbook && (perms.isCrew || perms.isCrewAdmin)) ? (
-                                                <button 
-                                                    onClick={() => setLogbookActivity(a)} 
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto bg-white text-primary border-surface-low/50 hover:bg-primary hover:text-white shadow-sm"
-                                                >
-                                                    <Edit3 size={12} /> Edit
-                                                </button>
-                                            ) : (
-                                                <button 
-                                                    onClick={() => setLogbookActivity(a)} 
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto bg-white text-on-surface/40 border-surface-low/30"
-                                                >
-                                                    <BookOpen size={12} /> View
-                                                </button>
-                                            )}
+                                            <div className="flex justify-center">
+                                                {a.logbookStatus === 'submitted' || a.logbookStatus === 'approved' ? (
+                                                    <div className="text-green-500 hover:scale-110 transition-transform cursor-pointer" title="Submitted Entry">
+                                                        <CheckCircle size={18} weight="bold" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-on-surface/20" title="Draft / Missing">
+                                                        <FileText size={18} />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-4 py-3 bg-white rounded-r-xl text-right relative">
                                             <button 
