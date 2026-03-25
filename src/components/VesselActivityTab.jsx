@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import {
     Ship, MapPin, Clock, Filter, RefreshCw, Anchor, Navigation,
     ArrowDownRight, ArrowUpRight, Search, Edit3, Check, X, Trash2, Plus,
-    BookOpen, ShieldCheck, Wind, BarChart2, CalendarDays, MessageSquare, ChevronRight, FileText, CheckCircle
+    BookOpen, ShieldCheck, Wind, BarChart2, CalendarDays, MessageSquare, ChevronRight, FileText, CheckCircle, Eye
 } from 'lucide-react';
 import LogbookEntryModal from './LogbookEntryModal';
 import ActivityChatModal from './ActivityChatModal';
@@ -356,20 +356,28 @@ export default function VesselActivityTab() {
                                         </td>
                                         <td className="px-4 py-3 bg-white text-[9px] font-black text-on-surface/20 uppercase">{calcDuration(a.startTime, a.endTime) || '—'}</td>
                                         <td className="px-4 py-3 bg-white text-center">
-                                            <button 
-                                                onClick={() => setLogbookActivity(a)} 
-                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto
-                                                    ${a.logbookStatus === 'submitted' || a.logbookStatus === 'approved'
-                                                        ? 'bg-green-50 text-green-600 border-green-200' 
-                                                        : 'bg-white text-primary border-surface-low/50 hover:bg-primary hover:text-white shadow-sm'
-                                                    }`}
-                                            >
-                                                {a.logbookStatus === 'submitted' || a.logbookStatus === 'approved' ? (
-                                                    <><CheckCircle size={12} /> Inviato</>
-                                                ) : (
-                                                    <><Edit3 size={12} /> Edit</>
-                                                )}
-                                            </button>
+                                            {a.logbookStatus === 'submitted' || a.logbookStatus === 'approved' ? (
+                                                <button 
+                                                    onClick={() => setLogbookActivity(a)} 
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto bg-green-50 text-green-600 border-green-200"
+                                                >
+                                                    <CheckCircle size={12} /> Certified
+                                                </button>
+                                            ) : perms.submitLogbook ? (
+                                                <button 
+                                                    onClick={() => setLogbookActivity(a)} 
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto bg-white text-primary border-surface-low/50 hover:bg-primary hover:text-white shadow-sm"
+                                                >
+                                                    <Edit3 size={12} /> Edit
+                                                </button>
+                                            ) : (
+                                                <button 
+                                                    onClick={() => setLogbookActivity(a)} 
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest border mx-auto bg-white text-on-surface/40 border-surface-low/30"
+                                                >
+                                                    <BookOpen size={12} /> View
+                                                </button>
+                                            )}
                                         </td>
                                         <td className="px-4 py-3 bg-white rounded-r-xl text-right relative">
                                             <button 
@@ -377,7 +385,7 @@ export default function VesselActivityTab() {
                                                 onMouseEnter={() => handleMessageHover(a.id)}
                                                 onMouseLeave={() => setHoverData({ id: null, messages: [], loading: false })}
                                                 className={`w-8 h-8 rounded-full inline-flex items-center justify-center transition-all shadow-sm ${
-                                                    (a.msgCount > 0 || a.unreadMsgCount > 0)
+                                                    (a.totalMsgCount > 0)
                                                     ? 'bg-blue-900 text-white hover:bg-blue-800' 
                                                     : 'bg-surface-low/30 text-on-surface/20 hover:bg-secondary hover:text-white'
                                                 }`}

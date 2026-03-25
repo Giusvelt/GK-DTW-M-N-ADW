@@ -57,6 +57,7 @@ function ActivityDashboard({ onSignOut }) {
   });
 
   const totalMsgs = (activities || []).reduce((sum, a) => sum + (a.msgCount || 0), 0);
+  const totalSubmitted = (activities || []).filter(a => a.logbookStatus === 'submitted').length;
 
 
   const renderTabContent = () => {
@@ -173,7 +174,7 @@ function ActivityDashboard({ onSignOut }) {
         <nav className="bg-white/50 backdrop-blur-md rounded-[2.5rem] p-2 mb-8 sm:mb-12 border border-white flex flex-wrap items-center gap-1 shadow-sm overflow-x-auto scrollbar-hide">
           {[
             { id: 'activity', label: 'Vessel Activity', icon: Activity },
-            { id: 'logbook-entry', label: 'Submitted Entry', icon: Edit3, permission: perms.submitLogbook || perms.approveLogbook },
+            { id: 'logbook-entry', label: 'Activity Submitted', icon: Edit3, permission: perms.submitLogbook || perms.approveLogbook },
             { id: 'schedule', label: 'Schedule', icon: Calendar, permission: perms.seeSchedule },
             { id: 'rewind', label: 'Rewind', icon: Rewind, permission: perms.seeRewindMap },
             { id: 'production', label: 'Production Targets', icon: Target, permission: perms.seeProductionTargets },
@@ -195,6 +196,9 @@ function ActivityDashboard({ onSignOut }) {
               {item.label}
               {item.id === 'activity' && totalMsgs > 0 && (
                 <span className="ml-1 bg-secondary text-white text-[9px] px-1.5 py-0.5 rounded-full">{totalMsgs}</span>
+              )}
+              {item.id === 'logbook-entry' && activeTab !== 'logbook-entry' && totalSubmitted > 0 && (
+                <span className="ml-1 bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full animate-pulse">{totalSubmitted}</span>
               )}
             </button>
           ))}
