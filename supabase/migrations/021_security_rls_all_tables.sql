@@ -50,23 +50,9 @@ CREATE POLICY "Service role can insert profiles"
 
 
 -- ─── 2. vessel_positions ────────────────────────────────────────────────────
--- Dati AIS. Tutti gli utenti autenticati possono leggere. Solo service_role scrive.
-ALTER TABLE IF EXISTS public.vessel_positions ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Authenticated users can read positions" ON public.vessel_positions;
-CREATE POLICY "Authenticated users can read positions"
-  ON public.vessel_positions FOR SELECT
-  USING (auth.role() = 'authenticated');
-
-DROP POLICY IF EXISTS "Service can insert positions" ON public.vessel_positions;
-CREATE POLICY "Service can insert positions"
-  ON public.vessel_positions FOR INSERT
-  WITH CHECK (true);  -- Edge Function usa service_role key
-
-DROP POLICY IF EXISTS "Service can update positions" ON public.vessel_positions;
-CREATE POLICY "Service can update positions"
-  ON public.vessel_positions FOR UPDATE
-  USING (true);
+-- NOTA: La tabella vessel_positions non esiste nello schema public di questo progetto.
+-- I dati posizionali sono gestiti tramite vista o tabella in altro schema.
+-- Se in futuro viene creata, aggiungere RLS qui.
 
 
 -- ─── 3. logbook_services ────────────────────────────────────────────────────
