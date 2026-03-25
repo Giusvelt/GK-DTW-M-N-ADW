@@ -27,6 +27,21 @@ const mergeDateTime = (baseDate, timeStr) => {
     } catch { return null; }
 };
 
+const getDeviceFingerprint = () => {
+    let deviceId = localStorage.getItem('gk_v3_device_id');
+    if (!deviceId) {
+        deviceId = 'dev-' + Math.random().toString(36).substring(2, 11);
+        localStorage.setItem('gk_v3_device_id', deviceId);
+    }
+    return {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        screen: `${window.screen.width}x${window.screen.height}`,
+        deviceId: deviceId,
+        page: window.location.pathname
+    };
+};
+
 const TimeInput = ({ label, value, onChange, disabled, baseDate }) => {
     const timeVal = value ? new Date(value).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', hour12: false }) : '';
     const dateVal = new Date(baseDate || value || new Date()).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
@@ -188,6 +203,19 @@ export default function LogbookEntryModal({ activity, profile, entryMeta, onClos
                 await supabase.from('logbook_entries').update(entryPayload).eq('id', existingId);
             } else {
                 await supabase.from('logbook_entries').insert(entryPayload);
+            }
+
+            // 4. Record Audit Log with Device Fingerprint
+            try {
+                await supabase.from('audit_logs').insert({
+                    activity_id: activity.id,
+                    user_id: profile?.id,
+                    action: submit ? 'CERTIFY_LOGBOOK' : 'UPDATE_LOGBOOK',
+                    new_values: entryPayload,
+                    device_info: getDeviceFingerprint()
+                });
+            } catch (auditErr) {
+                console.warn('Audit Log failed (silent):', auditErr);
             }
 
             onSaved?.();
