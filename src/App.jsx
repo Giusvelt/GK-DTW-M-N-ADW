@@ -21,6 +21,7 @@ import MobileOperatorChat from './components/MobileOperatorChat';
 import MobileCrewProfile from './components/MobileCrewProfile';
 import MobileCrewNews from './components/MobileCrewNews';
 import { Anchor, Activity, Target, Database, Edit3, Calendar, Rewind, Users, User, MessageSquare, Map as MapIcon, Bell } from 'lucide-react';
+import logoGk from './assets/logo_gk.png';
 import './index.css';
 
 function ActivityDashboard({ onSignOut }) {
@@ -127,10 +128,10 @@ function ActivityDashboard({ onSignOut }) {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-surface-low/30 h-16 sm:h-20 lg:h-24 px-6 sm:px-10 lg:px-16 flex items-center justify-between">
         <div className="flex items-center gap-4 lg:gap-6">
           <div className="w-10 h-10 lg:w-14 lg:h-14 overflow-hidden rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30 bg-white border border-surface-low/10">
-            <img src="/logo_gk.png" alt="GeoKanban Logo" className="w-full h-full object-contain p-1" />
+            <img src={logoGk} alt="GeoKanban Logo" className="w-full h-full object-contain p-1" />
           </div>
           <div>
-            <h1 className="font-manrope font-extrabold text-xl lg:text-2xl text-on-surface tracking-tight leading-none mb-1">GeoKanban V3</h1>
+            <h1 className="font-manrope font-extrabold text-xl lg:text-2xl text-on-surface tracking-tight leading-none mb-1">GeoKanban V3 — SYNCED</h1>
             <p className="text-[10px] lg:text-xs font-black text-primary uppercase tracking-[0.2em] opacity-80 leading-none">Breakwater Fleet Tracker — Genova</p>
           </div>
         </div>
